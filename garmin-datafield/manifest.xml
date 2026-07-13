@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Stark Varg Bridge - Garmin Connect IQ data field.
+  Acts as a BLE Central: scans for the phone bridge service, subscribes to the
+  telemetry characteristic (NOTIFY) and renders battery% + ride mode.
+
+  BLE requires Connect IQ 3.1.0+. Data fields on the Edge line support BLE
+  central from that API level onward. The permission id is "BluetoothLowEnergy".
+-->
+<iq:manifest version="3" xmlns:iq="http://www.garmin.com/xml/connectiq">
+    <iq:application
+        entry="StarkBridgeApp"
+        id="2E1A057F3D594B6AAFC625680A67E6BD"
+        launcherIcon="@Drawables.LauncherIcon"
+        minApiLevel="3.1.0"
+        name="@Strings.AppName"
+        type="datafield"
+        version="1.0.0">
+
+        <!--
+          Products: Edge cycling computers that support Connect IQ 3.1.0+ BLE.
+          Add/remove ids as your target fleet requires; every id here must be a
+          real device in the installed SDK's device database or the build fails.
+        -->
+        <iq:products>
+            <iq:product id="edge530"/>
+            <iq:product id="edge830"/>
+            <iq:product id="edge540"/>
+            <iq:product id="edge840"/>
+            <iq:product id="edge1030"/>
+            <iq:product id="edge1030plus"/>
+            <iq:product id="edge1040"/>
+            <iq:product id="edge1050"/>
+        </iq:products>
+
+        <iq:permissions>
+            <iq:uses-permission id="BluetoothLowEnergy"/>
+        </iq:permissions>
+
+        <iq:languages>
+            <iq:language>eng</iq:language>
+        </iq:languages>
+    </iq:application>
+</iq:manifest>

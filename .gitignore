@@ -1,0 +1,29 @@
+# --- Secrets / signing keys — NEVER commit these ---
+developer_key
+*.pem
+*.der
+*.key
+*.keystore
+*.jks
+
+# --- macOS ---
+.DS_Store
+
+# --- Android / Gradle ---
+*.iml
+.gradle/
+**/build/
+local.properties
+.idea/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# --- Garmin Connect IQ (Monkey C) build output ---
+**/bin/
+*.prg
+*.prg.debug.xml
+*.iq
+
+# --- misc ---
+*.log

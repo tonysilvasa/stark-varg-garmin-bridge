@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:paddingBottom="12dp" />
+
+        <!-- VIN input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/vin_label">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/vinInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapCharacters|textNoSuggestions"
+                android:maxLines="1"
+                android:hint="@string/vin_hint" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Start / Stop -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="8dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/startButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="@string/start" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/stopButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/stop" />
+        </LinearLayout>
+
+        <!-- Status -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/section_status"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:id="@+id/bikeStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/status_bike_disconnected" />
+
+        <TextView
+            android:id="@+id/garminStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/status_garmin_disconnected"
+            android:paddingBottom="8dp" />
+
+        <!-- Telemetry grid -->
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1">
+
+            <TableRow>
+                <TextView android:text="@string/battery_label" android:paddingEnd="12dp" />
+                <TextView android:id="@+id/batteryValue" android:text="@string/dash" android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow>
+                <TextView android:text="@string/soh_label" android:paddingEnd="12dp" />
+                <TextView android:id="@+id/sohValue" android:text="@string/dash" android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow>
+                <TextView android:text="@string/mode_label" android:paddingEnd="12dp" />
+                <TextView android:id="@+id/modeValue" android:text="@string/dash" android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow>
+                <TextView android:text="@string/speed_label" android:paddingEnd="12dp" />
+                <TextView android:id="@+id/speedValue" android:text="@string/dash" android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow>
+                <TextView android:text="@string/flags_label" android:paddingEnd="12dp" />
+                <TextView android:id="@+id/flagsValue" android:text="@string/dash" android:textStyle="bold" />
+            </TableRow>
+        </TableLayout>
+
+        <!-- Derived PIN -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pin_label"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:id="@+id/pinValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dash"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.2"
+            android:textIsSelectable="true"
+            android:fontFamily="monospace" />
+
+        <!-- Log -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/section_log"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingBottom="4dp" />
+
+        <ScrollView
+            android:id="@+id/logScroll"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:background="#11000000"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/logView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:fontFamily="monospace"
+                android:textIsSelectable="true" />
+        </ScrollView>
+
+    </LinearLayout>
+</ScrollView>

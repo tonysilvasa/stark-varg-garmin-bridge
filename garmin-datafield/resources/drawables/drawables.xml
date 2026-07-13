@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<drawables>
+    <!-- LauncherIcon is referenced from manifest.xml (launcherIcon="@Drawables.LauncherIcon").
+         Connect IQ requires a PNG bitmap here (not a vector). -->
+    <bitmap id="LauncherIcon" filename="launcher_icon.png"/>
+</drawables>

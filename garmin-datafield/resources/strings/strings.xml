@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+    <string id="AppName">Stark Varg Bridge</string>
+
+    <!-- Settings labels (shown in the Connect IQ mobile/Express app settings). -->
+    <string id="ModeLabelsTitle">Ride mode labels</string>
+    <string id="ModeLabelsPrompt">Comma-separated labels, mode index 0 first. e.g. Eco,Wet,Sport,Race,Custom</string>
+    <string id="StaleTimeoutTitle">Stale timeout (seconds)</string>
+    <string id="StaleTimeoutPrompt">Show dashes if no fresh packet arrives within this many seconds.</string>
+
+    <!-- Default mode labels; used when the setting is blank. Comma-separated. -->
+    <string id="ModeLabelsDefault">Mode 0,Mode 1,Mode 2,Mode 3,Mode 4</string>
+</strings>

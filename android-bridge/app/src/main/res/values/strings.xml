@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Stark → Garmin Bridge</string>
+
+    <string name="vin_label">Bike VIN (advertised name)</string>
+    <string name="vin_hint">17-character VIN</string>
+
+    <string name="start">Start bridge</string>
+    <string name="stop">Stop bridge</string>
+
+    <string name="section_status">Status</string>
+    <string name="status_bike_disconnected">Bike: disconnected</string>
+    <string name="status_bike_connected">Bike: connected</string>
+    <string name="status_garmin_disconnected">Garmin: disconnected</string>
+    <string name="status_garmin_connected">Garmin: connected</string>
+
+    <string name="battery_label">Battery</string>
+    <string name="soh_label">State of health</string>
+    <string name="mode_label">Ride mode</string>
+    <string name="speed_label">Speed</string>
+    <string name="flags_label">Flags</string>
+
+    <string name="pin_label">Pairing PIN (type if prompted)</string>
+
+    <string name="section_log">Log</string>
+
+    <string name="dash">—</string>
+</resources>

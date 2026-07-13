@@ -1,0 +1,13 @@
+# Monkey C build configuration for the Stark Varg Bridge data field.
+#
+# The default source path and resource path already cover source/ and
+# resources/. This file exists so the project is recognized as a Connect IQ
+# app by the SDK / VS Code Monkey C extension, and gives a place to hang any
+# per-product overrides later.
+
+project.manifest = manifest.xml
+
+# Base (all products) sources and resources. These are the SDK defaults but we
+# state them explicitly for clarity.
+base.sourcePath = source
+base.resourcePath = resources

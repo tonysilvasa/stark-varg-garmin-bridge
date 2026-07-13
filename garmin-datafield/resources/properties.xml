@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Application properties. These back the user-editable settings declared in
+  settings/settings.xml and are read at runtime via
+  Application.Properties.getValue("<id>").
+-->
+<properties>
+    <!-- Comma-separated ride mode labels, index 0 first. Blank => show the raw
+         mode number. Set this (in the field's settings) to name your maps. -->
+    <property id="ModeNames" type="string"></property>
+
+    <!-- Seconds without a fresh packet before the field is considered stale. -->
+    <property id="StaleTimeout" type="number">6</property>
+</properties>

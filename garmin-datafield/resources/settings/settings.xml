@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  User-editable settings, surfaced in the Garmin Connect IQ mobile app and in
+  Garmin Express under this data field's settings. Each maps to a property in
+  resources/properties.xml by matching propertyKey.
+-->
+<settings>
+    <setting propertyKey="@Properties.ModeNames" title="@Strings.ModeLabelsTitle" prompt="@Strings.ModeLabelsPrompt">
+        <settingConfig type="alphaNumeric"/>
+    </setting>
+
+    <setting propertyKey="@Properties.StaleTimeout" title="@Strings.StaleTimeoutTitle" prompt="@Strings.StaleTimeoutPrompt">
+        <settingConfig type="numeric" min="2" max="60"/>
+    </setting>
+</settings>
