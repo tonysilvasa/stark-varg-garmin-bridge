@@ -89,75 +89,129 @@ class StarkBridgeView extends WatchUi.DataField {
             }
         }
 
-        // Battery % (big, top) and ride mode with a lightning bolt (bottom).
-        drawStacked(dc, batteryStr, batteryColor, modeStr, fg, telemetry != null);
-
-        // Charging indicator in the corner when applicable. Plain ASCII "CHG"
-        // is used instead of a lightning glyph, which the built-in device fonts
-        // do not reliably contain (would render as an empty box).
+        // Mode colour cue + battery gauge inputs.
+        var modeColor = fg;
+        var batteryPct = null;
+        var charging = false;
         if (telemetry != null) {
-            var charging = telemetry[:charging] as Boolean?;
-            if (charging != null && charging) {
-                dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(_w - 2, 0, Graphics.FONT_XTINY, "CHG",
-                            Graphics.TEXT_JUSTIFY_RIGHT);
-            }
+            modeColor = modeColorFor(telemetry[:mode] as Number?);
+            batteryPct = telemetry[:battery] as Number?;
+            var c = telemetry[:charging] as Boolean?;
+            charging = (c != null && c);
         }
+
+        // Battery gauge bar (top) + ride-mode hero (big, colour-coded, below).
+        drawHero(dc, batteryStr, batteryColor, batteryPct, charging,
+                 modeStr, modeColor, telemetry != null);
 
     }
 
     // ---- Layout helpers -----------------------------------------------------
 
-    // Draw battery % (big, top) and the ride mode preceded by a lightning bolt
-    // (bottom). Battery uses a numeric font; mode uses a text font (for letters).
-    private function drawStacked(dc as Graphics.Dc,
-                                 batteryStr as String, batteryColor as Graphics.ColorType,
-                                 modeStr as String, modeColor as Graphics.ColorType,
-                                 hasData as Boolean) as Void {
-        var top = 2;
-        var avail = _h - top;
-        var maxW = _w - 6;
-        var battMaxH = (avail * 55) / 100;   // battery gets the larger share
-        var modeMaxH = (avail * 38) / 100;
+    // Battery gauge bar across the top, then the ride mode as the dominant
+    // element below: a big, colour-coded value with a lightning bolt.
+    private function drawHero(dc as Graphics.Dc,
+                              batteryStr as String, batteryColor as Graphics.ColorType,
+                              batteryPct as Number?, charging as Boolean,
+                              modeStr as String, modeColor as Graphics.ColorType,
+                              hasData as Boolean) as Void {
+        // --- Battery gauge bar (fuel-gauge style) across the top ---
+        var barH = (_h * 22) / 100;
+        if (barH < 16) { barH = 16; }
+        var barX = 3;
+        var barY = 2;
+        var barW = _w - 6;
 
+        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.fillRectangle(barX, barY, barW, barH);
+        if (batteryPct != null) {
+            var pct = batteryPct;
+            if (pct < 0) { pct = 0; }
+            if (pct > 100) { pct = 100; }
+            dc.setColor(batteryColor, Graphics.COLOR_TRANSPARENT);
+            dc.fillRectangle(barX, barY, (barW * pct) / 100, barH);
+        }
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.drawRectangle(barX, barY, barW, barH);
+        if (charging) {
+            dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(barX + 6, barY + barH / 2, Graphics.FONT_TINY, "CHG",
+                        Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        }
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(barX + barW - 6, barY + barH / 2, Graphics.FONT_SMALL, batteryStr,
+                    Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        // --- Ride-mode hero below the bar ---
+        var heroTop = barY + barH + 3;
+        var heroAvail = _h - heroTop - 1;
+
+        // Mode value: biggest font that fits the space below the bar. Numeric
+        // modes use the large numeric fonts; named modes use text fonts.
+        var maxH = (heroAvail * 94) / 100;
         var numLadder = [
             Graphics.FONT_NUMBER_THAI_HOT, Graphics.FONT_NUMBER_HOT,
             Graphics.FONT_NUMBER_MEDIUM, Graphics.FONT_NUMBER_MILD,
-            Graphics.FONT_LARGE, Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY
+            Graphics.FONT_LARGE, Graphics.FONT_MEDIUM
         ];
-        var textLadder = [
+        var txtLadder = [
             Graphics.FONT_LARGE, Graphics.FONT_MEDIUM, Graphics.FONT_SMALL,
             Graphics.FONT_TINY, Graphics.FONT_XTINY
         ];
+        var ladder = isAllDigits(modeStr) ? numLadder : txtLadder;
 
-        var battFont = bestFont(dc, batteryStr, maxW, battMaxH, numLadder);
-        var modeFont = bestFont(dc, modeStr, maxW, modeMaxH, textLadder);
+        // Reserve ~22% of the width for the bolt when we have live data.
+        var valMaxW = hasData ? (((_w - 8) * 78) / 100) : (_w - 8);
+        var valFont = bestFont(dc, modeStr, valMaxW, maxH, ladder);
+        var valH = dc.getFontHeight(valFont);
+        var valW = dc.getTextWidthInPixels(modeStr, valFont);
 
-        var y1 = top + (avail * 32) / 100;   // battery center (upper, dominant)
-        var y2 = top + (avail * 78) / 100;   // mode center (lower)
-
-        dc.setColor(batteryColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(_w / 2, y1, battFont, batteryStr,
-                    Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-
-        // Mode line: lightning bolt + value, centered together. No bolt before
-        // any data has arrived (placeholder text like "SCAN").
+        var boltW = 0;
+        var boltH = 0;
+        var gap = 0;
         if (hasData) {
-            var modeH = dc.getFontHeight(modeFont);
-            var textW = dc.getTextWidthInPixels(modeStr, modeFont);
-            var boltH = (modeH * 78) / 100;
-            var boltW = (boltH * 62) / 100;
-            var gap = 6;
-            var startX = (_w - (boltW + gap + textW)) / 2;
-            drawBolt(dc, startX, y2 - boltH / 2, boltW, boltH, Graphics.COLOR_YELLOW);
-            dc.setColor(modeColor, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(startX + boltW + gap, y2, modeFont, modeStr,
-                        Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-        } else {
-            dc.setColor(modeColor, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(_w / 2, y2, modeFont, modeStr,
-                        Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            boltH = (valH * 70) / 100;
+            boltW = (boltH * 60) / 100;
+            gap = 8;
         }
+
+        var totalW = valW + boltW + gap;
+        var startX = (_w - totalW) / 2;
+        if (startX < 2) { startX = 2; }
+        var cy = heroTop + heroAvail / 2;
+
+        if (hasData) {
+            drawBolt(dc, startX, cy - boltH / 2, boltW, boltH, modeColor);
+        }
+        dc.setColor(modeColor, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(startX + boltW + gap, cy, valFont, modeStr,
+                    Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+    }
+
+    // Ride-mode colour, cool -> hot by mode number. Edit to taste / re-map.
+    private function modeColorFor(index as Number?) as Graphics.ColorType {
+        if (index == null) { return Graphics.COLOR_WHITE; }
+        var ramp = [
+            Graphics.COLOR_GREEN,    // 0
+            Graphics.COLOR_GREEN,    // 1
+            Graphics.COLOR_GREEN,    // 2
+            Graphics.COLOR_YELLOW,   // 3
+            Graphics.COLOR_ORANGE,   // 4
+            Graphics.COLOR_RED,      // 5
+            Graphics.COLOR_RED       // 6
+        ];
+        if (index >= 0 && index < ramp.size()) { return ramp[index]; }
+        return Graphics.COLOR_WHITE;
+    }
+
+    private function isAllDigits(s as String) as Boolean {
+        if (s.length() == 0) { return false; }
+        var arr = s.toCharArray();
+        for (var i = 0; i < arr.size(); i++) {
+            var code = arr[i].toNumber();
+            if (code < 48 || code > 57) { return false; }
+        }
+        return true;
     }
 
     // Draw a filled lightning bolt inside the box (x, y, w, h). Drawn as a
