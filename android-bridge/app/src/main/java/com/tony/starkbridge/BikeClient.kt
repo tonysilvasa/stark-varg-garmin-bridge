@@ -389,6 +389,8 @@ class BikeClient(
                             chargerConnected = st.chargerConnected,
                             inGear = st.inGear,
                             faultActive = st.faultActive,
+                            miscBits = st.miscBits,
+                            walkMode = st.walkMode,
                         )
                     }
                 }

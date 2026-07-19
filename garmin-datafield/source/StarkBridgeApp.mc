@@ -161,7 +161,7 @@ class StarkBridgeApp extends Application.AppBase {
     //   S=adverts seen  U=results with parseable service-UUIDs
     //   X=results with raw advert data  M=matched  C=connected  R=packets
     function debugLine() as String {
-        return "v6 S:" + _dbgScanSeen + " U:" + _dbgSvc + " X:" + _dbgRaw
+        return "v7 S:" + _dbgScanSeen + " U:" + _dbgSvc + " X:" + _dbgRaw
              + " M:" + _dbgMatched + " C:" + _dbgConn + " R:" + _dbgPkt;
     }
 

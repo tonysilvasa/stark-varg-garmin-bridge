@@ -274,6 +274,8 @@ class BridgeService : LifecycleService() {
             putExtra(EXTRA_IN_GEAR, state.inGear)
             putExtra(EXTRA_FAULT, state.faultActive)
             putExtra(EXTRA_SEQ, state.seq)
+            putExtra(EXTRA_MISC_BITS, state.miscBits)
+            putExtra(EXTRA_WALK_MODE, state.walkMode)
         }
         sendBroadcast(i)
     }
@@ -316,6 +318,8 @@ class BridgeService : LifecycleService() {
         const val EXTRA_IN_GEAR = "inGear"
         const val EXTRA_FAULT = "fault"
         const val EXTRA_SEQ = "seq"
+        const val EXTRA_MISC_BITS = "miscBits"
+        const val EXTRA_WALK_MODE = "walkMode"
 
         // Android pairing constants (avoid hidden-API references).
         private const val ACTION_PAIRING_REQUEST = "android.bluetooth.device.action.PAIRING_REQUEST"

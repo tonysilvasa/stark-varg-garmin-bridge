@@ -198,7 +198,13 @@ class MainActivity : AppCompatActivity() {
             if (inGear) add("GEAR")
             if (fault) add("FAULT")
         }
-        binding.flagsValue.text = if (flags.isEmpty()) "—" else flags.joinToString(" · ")
+        // DISCOVERY AID: raw status miscBits + walk/crawl nibble, so the crawl
+        // forward/back values can be read straight off the bike.
+        val miscBits = intent.getIntExtra(BridgeService.EXTRA_MISC_BITS, 0)
+        val walkMode = intent.getIntExtra(BridgeService.EXTRA_WALK_MODE, 0)
+        val diag = "misc:0x%04X walk:%d".format(miscBits, walkMode)
+        binding.flagsValue.text =
+            (if (flags.isEmpty()) "—" else flags.joinToString(" · ")) + "\n" + diag
     }
 
     private fun updatePinPreview(vin: String) {
