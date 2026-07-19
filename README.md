@@ -5,6 +5,10 @@ Show your **Stark Varg**'s battery % and ride mode live on a **Garmin Edge** bik
 An Android app runs on the bike's own "Stark phone", reads the bike's Bluetooth (BLE) telemetry,
 and relays it to a small Connect IQ data field on the Garmin — no extra hardware required.
 
+<img src="docs/edge-field.jpg" alt="The Stark Varg Bridge data field on a Garmin Edge 1050 — a battery gauge bar and a large colour-coded ride mode" width="360">
+
+_Battery as a fuel-gauge bar (green → red by charge); ride mode big and colour-coded by number (green → red)._
+
 > ⚠️ **Unofficial / not affiliated with Stark Future.** Reverse-engineered, read-only telemetry.
 > Use at your own risk. See the [disclaimer](#disclaimer).
 
@@ -57,12 +61,27 @@ The wire format between the two apps is documented in [`PROTOCOL.md`](PROTOCOL.m
 - **Re-advertise.** The phone runs a GATT server + advertiser exposing a tiny custom service; the Garmin
   connects as a BLE central and subscribes.
 
-### ⚠️ The one non-obvious gotcha: bonding
+### ⚠️ The non-obvious gotcha: you need the bond, but *not* the connection
 
-A Garmin's Connect IQ scanner will **not discover the phone unless the two are Bluetooth-bonded.** The
-fix is simple: **pair the Stark phone to the Edge in the Garmin Connect app once.** After that the data
-field finds it immediately. (An iPhone/nRF Connect sees the advert without bonding, which makes this
-very confusing to debug — hence this note.)
+Two rules, both learned the hard way. You need **both**, and they pull in opposite directions:
+
+1. **The Edge must be Bluetooth-bonded to the phone**, or the Connect IQ scanner will never *discover*
+   it — it'll scan forever and never match. Create the bond by pairing the Stark phone to the Edge in
+   the **Garmin Connect** app, once.
+   *(An iPhone / nRF Connect sees the advert with no bond at all, which makes this maddening to debug.)*
+2. **Garmin Connect must not be actively connected**, or the field can't *connect*. It will find the
+   phone (match) but the connection hangs and never completes — because the Edge already holds a link
+   to that phone via Garmin Connect, and Connect IQ can't open its own connection alongside it.
+
+**So: pair once to create the bond, then disable (or force-stop) Garmin Connect on the Stark phone.**
+The bond survives the app being disabled — and the field then both discovers *and* connects.
+
+Symptom cheat-sheet:
+
+| Field shows | Meaning | Fix |
+|---|---|---|
+| `SCAN` forever, never matches | Not bonded | Pair to the Edge in Garmin Connect |
+| Matches but never connects (stuck) | Garmin Connect is live | Force-stop / disable Garmin Connect |
 
 ---
 
@@ -91,8 +110,15 @@ cd garmin-datafield
 ## Usage
 
 1. Install both apps (above). On the phone, open **Stark Bridge**, enter your bike's **VIN**, tap **Start**.
-2. **Pair the phone to the Edge in Garmin Connect** (one-time — this is the bonding step).
-3. On the Edge: Data Screens → add field → Connect IQ → **Stark Varg Bridge**.
+2. **Pair the phone to the Edge in Garmin Connect** (one-time — this creates the required bond).
+3. **Disable / force-stop Garmin Connect on the phone** — a live Garmin Connect link blocks the data
+   field from connecting (see the [gotcha](#️-the-non-obvious-gotcha-you-need-the-bond-but-not-the-connection)).
+   The bond stays put.
+4. On the Edge: Data Screens → add field → Connect IQ → **Stark Varg Bridge**.
+
+> **Tip:** your bike's VIN is its Bluetooth name. If you're unsure of it, read it off the phone's bonded
+> device list (`adb shell dumpsys bluetooth_manager | grep -A3 "Bonded devices"`) rather than from
+> memory — mixing up VINs between bikes just fails silently.
 
 Battery % and ride mode appear and update live. Calibration notes (SOC scaling, mode indices) are in
 [`CALIBRATION-CHECKLIST.md`](CALIBRATION-CHECKLIST.md).
